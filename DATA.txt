@@ -1,0 +1,12 @@
+Array methods: concat(), join(), pop(), push(),
+ reverse(), shift(), slice(), sort(), splice(), toString(), 
+unshift(), indexOf(), lastIndexOf(), includes(), 
+forEach(), map(), filter(), reduce(), reduceRight(), 
+every(), some()
+
+
+
+String methods: charAt(), concat(), endsWith(), 
+fromCharCode(), includes(), indexOf(), lastIndexOf(), length, localeCompare(),
+ match(), replace(), search(), slice(), split(), startsWith(), substr(), substring(), 
+toLowerCase(), toUpperCase(), trim()

@@ -1,0 +1,68 @@
+       Use context  How to use
+///////////////////////////////
+   
+ItemsContext comp
+
+
+
+ import { createContext } from 'react';
+
+const ItemsContext = createContext([]);
+
+export default ItemsContext;
+
+/////
+
+APP.js
+
+import React, { useState } from 'react';
+import ItemsContext from './ItemsContext';
+
+function App() {
+  const [items, setItems] = useState([
+    { id: 1, name: "item 1" },
+    { id: 2, name: "item 2" },
+    { id: 3, name: "item 3" }
+  ]);
+
+  return (
+    <ItemsContext.Provider value={items}>
+      <div>
+        <ItemsList />
+        <AddItemForm />
+      </div>
+    </ItemsContext.Provider>
+  );
+}
+/////
+how to use in other components
+
+
+import React, { useContext } from 'react';
+import ItemsContext from './ItemsContext';
+
+function AddItemForm() {
+  const [newItem, setNewItem] = useState("");
+  const { items, setItems } = useContext(ItemsContext);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const newItems = [...items, { id: Date.now(), name: newItem }];
+    setItems(newItems);
+    setNewItem("");
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={newItem}
+        onChange={event => setNewItem(event.target.value)}
+      />
+      <button type="submit">Add Item</button>
+    </form>
+  );
+}
+
+
+    

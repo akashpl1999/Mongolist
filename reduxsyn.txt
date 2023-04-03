@@ -1,0 +1,60 @@
+redux syntex
+
+
+
+
+import { createStore, combineReducers } from 'redux';
+
+// Reducer functions
+const countReducer = (state = { count: 0 }, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { count: state.count + 1 };
+    case 'DECREMENT':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+};
+
+const userReducer = (state = { user: {} }, action) => {
+  switch (action.type) {
+    case 'SET_USER':
+      return { user: action.user };
+    default:
+      return state;
+  }
+};
+
+// Combine reducers
+const rootReducer = combineReducers({
+  count: countReducer,
+  user: userReducer
+});
+
+// Create store
+const store = createStore(rootReducer);
+
+// Actions
+const increment = () => {
+  return {
+    type: 'INCREMENT'
+  };
+};
+
+const decrement = () => {
+  return {
+    type: 'DECREMENT'
+  };
+};
+
+const setUser = (user) => {
+  return {
+    type: 'SET_USER',
+    user
+  };
+};
+
+// Export store, actions and the initial state
+export { store, increment, decrement, setUser };
+

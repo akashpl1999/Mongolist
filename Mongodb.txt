@@ -1,0 +1,282 @@
+
+
+//Database show
+show dbs
+
+
+// Switch to the database you want to query
+use dbname
+
+// Show the collections in the database
+show collections
+
+// Select the collection you want to query
+db.collectionname.find() //get the all data from the  collectionname 
+
+db.collectionname.find().pretty() //it makes the data look more good ways
+
+
+
+//find
+
+db.collectionname.find({"name":"akash"})
+
+
+//agrregation 
+
+  group , match , limit , skip,  project, 
+
+
+db.collection.aggregate([
+  {
+    $group: {
+      _id: "$name",
+      emails: { $addToSet: "$email" }
+    }
+  }
+])
+db.collection.aggregate([
+  {
+    $group: {
+      _id: { name: "$name", email: "$email" }
+    }
+  }
+])
+
+op // {_id:{name:"akash", email:"akash@gmail.com"}}
+
+
+
+here addToSet make sure that only the  unquie email are add to group
+
+
+
+////
+db.collection.aggregate([
+   { $match: { age: { $gte: 18 } } },
+   // additional stages here
+])
+
+
+db.collection.aggregate([
+  { $match: { field1: value1, field2: { $gte: value2 } } },
+  { $group: { _id: "$field1", count: { $sum: 1 } } }
+]
+
+
+$lt, $gt, $lte, and $gte
+   
+
+////////////////////////////
+{
+  "_id": 1,
+  "customerId": 123,
+  "orderDate": ISODate("2022-03-10T10:00:00Z"),
+  "orderItems": [
+    {
+      "productId": 100,
+      "productName": "iPhone 13",
+      "quantity": 2,
+      "price": 1199.99
+    },
+    {
+      "productId": 200,
+      "productName": "iPad Pro",
+      "quantity": 1,
+      "price": 899.99
+    }
+  ]
+},
+{
+  "_id": 2,
+  "customerId": 456,
+  "orderDate": ISODate("2022-03-11T14:30:00Z"),
+  "orderItems": [
+    {
+      "productId": 100,
+      "productName": "iPhone 13",
+      "quantity": 1,
+      "price": 1199.99
+    },
+    {
+      "productId": 300,
+      "productName": "MacBook Pro",
+      "quantity": 1,
+      "price": 2399.99
+    }
+  ]
+
+}
+
+db.orders.aggregate([
+  { $unwind: "$orderItems" },  it wil
+   make seperate data for each 
+   
+
+   /////////
+   {
+      "_id": 1,
+  "customerId": 123,
+  "orderDate": ISODate("2022-03-10T10:00:00Z"),
+  "orderItems":  {
+      "productId": 100,
+      "productName": "iPhone 13",
+      "quantity": 2,
+      "price": 1199.99
+    },
+ 
+      "_id": 1,
+  "customerId": 123,
+  "orderDate": ISODate("2022-03-10T10:00:00Z"),
+  "orderItems":  {
+      "productId": 100,
+      "productName": "ipad 13",
+      "quantity": 1,
+      "price": 899.99
+    },
+ 
+   }
+
+
+   //////////////////
+  
+  { $group: { _id: null, avgPrice: { $avg: "$orderItems.price" } } }
+])
+
+
+
+
+
+
+
+////match
+
+
+db.universities.aggregate([
+  { $match : { country : 'Spain', city : 'Salamanca' } }
+]).pretty()
+
+
+
+db.universities.aggregate([
+  { $project : { _id : 0, country : 1, city : 1, name : 1 } }
+]).pretty()
+
+///output
+{ "country" : "Spain", "city" : "Salamanca", "name" : "USAL" }
+{ "country" : "Spain", "city" : "Salamanca", "name" : "UPSA" }
+
+
+
+db.universities.aggregate([
+  { $group : { _id : '$name', totaldocs : { $sum : 1 } } }
+]).pretty()
+..will produce this result …
+
+{ "_id" : "UPSA", "totaldocs" : 1 }
+{ "_id" : "USAL", "totaldocs" : 1 }
+
+
+
+////
+db.universities.aggregate([
+  { $match : { name : 'USAL' } },
+  { $addFields : { foundation_year : 1218 } }
+]).pretty()
+This gives the result …
+
+{
+	"_id" : ObjectId("5b7d9d9efbc9884f689cdba9"),
+	"country" : "Spain",
+	"city" : "Salamanca",
+	"name" : "USAL",
+	"location" : {
+		"type" : "Point",
+		"coordinates" : [
+			-5.6722512,
+			17,
+			40.9607792
+		]
+	},
+	"students" : [
+		{
+			"year" : 2014,
+			"number" : 24774
+		},
+		{
+			"year" : 2015,
+			"number" : 23166
+		},
+		{
+			"year" : 2016,
+			"number" : 21913
+		},
+		{
+			"year" : 2017,
+			"number" : 21715
+		}
+	],
+	"foundation_year" : 1218 /////////////////
+}
+
+
+
+
+///
+
+
+db.universities.aggregate([
+  { $match : { name : 'USAL' } },
+  { $project : { _id : 0, name : 1 } },
+  { $lookup : {
+      from : 'courses',    here coureses is collection  this data is stored in universities in name of coursedata  like [
+        {
+            data of courses collection   
+            note localField should be matches  forien filelds
+        }
+      ]
+      localField : 'name',      this filed should matches foreignField
+      foreignField : 'university',
+      as : 'coursedata'
+  } } 
+]).pretty()
+
+
+
+
+
+////////////
+
+consider data
+{
+	"name" : "USAL",
+	"courses" : [
+		{
+			"_id" : ObjectId("5b7d9ea5fbc9884f689cdbab"),
+			"university" : "USAL",
+			"name" : "Computer Science",
+			"level" : "Excellent"
+		},
+		{
+			"_id" : ObjectId("5b7d9ea5fbc9884f689cdbac"),
+			"university" : "USAL",
+			"name" : "Electronics",
+			"level" : "Intermediate"
+		},
+		{
+			"_id" : ObjectId("5b7d9ea5fbc9884f689cdbad"),
+			"university" : "USAL",
+			"name" : "Communication",
+			"level" : "Excellent"
+		}
+	]
+}
+
+
+db.courses.aggregate([
+  { $sortByCount : '$level' }
+]).pretty()
+This is the output:
+
+{ "_id" : "Excellent", "count" : 2 }
+{ "_id" : "Intermediate", "count" : 1 }
